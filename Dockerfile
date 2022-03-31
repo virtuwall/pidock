@@ -1,12 +1,23 @@
 
 FROM scratch
 
-USER root
 ADD root.tar /
-RUN apt-get update && apt-get install -y vim
 
-ARG PI_PASSWORD
-RUN echo "pi:${PI_PASSWORD}" | chpasswd
+ARG ADMIN_PASSWORD
+RUN adduser --disabled-password --gecos "Admin" --ingroup sudo --shell /bin/bash admin
+RUN echo "admin:${ADMIN_PASSWORD}" | chpasswd
+
+USER admin
+
+ARG SSH_PUB_KEY
+RUN mkdir /home/admin/.ssh
+RUN echo ${SSH_PUB_KEY} > /home/admin/.ssh/authorized_keys
 
 ADD root-overlay /
-RUN chown -R pi /home/pi
+
+RUN netplan try
+
+
+
+# ADD configure/configure-common.sh /configure/configure-common.sh
+# RUN /configure/configure-common.sh

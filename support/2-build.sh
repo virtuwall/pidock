@@ -23,4 +23,4 @@ if [ -z "$1" ] ; then
     exit 1
 fi
 
-docker build --build-arg PI_PASSWORD=$1 -t raspi-custom .
+docker build --build-arg -t raspi-custom .

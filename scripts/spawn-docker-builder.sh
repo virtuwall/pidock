@@ -1,0 +1,1 @@
+ docker run -it -v $PWD:/work --privileged=true ubuntu:20.04

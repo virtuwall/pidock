@@ -23,29 +23,30 @@ fi
 
 . $(dirname "$0")/functions.sh
 
-do_umount
+# do_umount
 set -e
 
 echo "Creating ${PT_FILENAME}"
 sfdisk -d "${1}" > "${PT_FILENAME}"
 
-losetup -a | grep "${1}" | awk -F: '{ print $1 }' | \
-    xargs -r sudo losetup -d
-sudo losetup -fP ${1}
-LODEV=$(losetup -a | grep "${1}" | awk -F: '{ print $1 }')
-trap 'do_umount' ERR
+# losetup -a | grep "${1}" | awk -F: '{ print $1 }' | \
+#     xargs -r sudo losetup -d
+# sudo losetup -fP ${1}
+# LODEV=$(losetup -a | grep "${1}" | awk -F: '{ print $1 }')
+# trap 'do_umount' ERR
 
 echo "Creating boot.tar"
 
-sudo mount ${LODEV}p1 /mnt
-sudo tar cf boot.tar -C /mnt --numeric-owner .
-sudo chown $(whoami) boot.tar
-sudo umount /mnt
+mount-img ${1} /mnt 1
+tar cf boot.tar -C /mnt --numeric-owner .
+chown $(whoami) boot.tar
+umount /mnt
 
 echo "Creating root.tar"
 
-sudo mount ${LODEV}p2 /mnt
-sudo tar cf root.tar -C /mnt --numeric-owner .
-sudo chown $(whoami) root.tar
+# sudo mount ${LODEV}p2 /mnt
+mount-img ${1} /mnt 2
+tar cf root.tar -C /mnt --numeric-owner .
+chown $(whoami) root.tar
+umount /mnt
 
-do_umount
